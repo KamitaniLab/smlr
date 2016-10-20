@@ -3,7 +3,9 @@
 Sparce Multinomial Logistic Regression (SMLR) classifier, writen by Kei Majima @Kyoto Univ.
 The API of this function is compatible with the logistic regression in scikit-learn.
 
-
+Original SLR toolbox for Matlab is available from<br/>
+http://www.cns.atr.jp/%7Eoyamashi/SLR_WEB.html
+  
 ## Usage
 ### Parameters
   n_iter: The number of iterations in training (default 100). 
@@ -26,7 +28,6 @@ For demonstration, try demoSMLR_20140714.py or demoSMLR_20140714.ipnb
   Yamashita O, Sato MA, Yoshioka T, Tong F, Kamitani Y.   Neuroimage. 2008.
   doi: 10.1016/j.neuroimage.2008.05.050.   
 
-  http://www.cns.atr.jp/%7Eoyamashi/SLR_WEB.html
 
 
 ## License
