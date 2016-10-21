@@ -14,6 +14,7 @@ Original SLR toolbox for Matlab is available from<br/>
 http://www.cns.atr.jp/%7Eoyamashi/SLR_WEB.html
   
 ## Usage
+    from SMLR import *
     smlr=SMLR.SMLR(n_iter=100)
     smlr.fit(X,y)
     smlr.predict(X_test)
