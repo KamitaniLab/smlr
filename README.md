@@ -14,9 +14,9 @@ Original SLR toolbox for Matlab is available from<br/>
 http://www.cns.atr.jp/%7Eoyamashi/SLR_WEB.html
   
 ## Usage
-smlr=SMLR.SMLR(n_iter=100)<br/>
-smlr.fit(X,y)<br/>
-smlr.predict(X_test)<br/>
+    smlr=SMLR.SMLR(n_iter=100)
+    smlr.fit(X,y)
+    smlr.predict(X_test)
 
 
 X, X_text: numpy array of input features (# of samples x # of features)<br/>
@@ -29,10 +29,10 @@ use integers 0,1,2,…,K-1 when K-class classification)<br/>
   verbose: If 1, print verbose information (default).
 
 ### Attributes
-  `coef_` : array, shape = [n_classes, n_features]
+  coef_ : array, shape = [n_classes, n_features]
       Coefficient of the features in the decision function.
 
-  `intercept_` : array, shape = [n_classes]
+  intercept_ : array, shape = [n_classes]
       Intercept (a.k.a. bias) added to the decision function.
 
 For demonstration, try demoSMLR_20140714.py or demoSMLR_20140714.ipnb
@@ -50,3 +50,4 @@ For demonstration, try demoSMLR_20140714.py or demoSMLR_20140714.ipnb
 ## License
 The scripts provided here are released under the MIT license (http://opensource.org/licenses/mit-license.php) 
 
+    
