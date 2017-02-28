@@ -14,11 +14,11 @@ Original SLR toolbox for Matlab is available at <http://www.cns.atr.jp/%7Eoyamas
 import smlr
 
 smlr = smlr.SMLR(n_iter=100)
-smlr.fit(X,y)
-smlr.predict(X_test)
+smlr.fit(x, y)
+smlr.predict(x_test)
 ```
 
-- `X`, `X_text`: numpy array of input features (# of samples x # of features)
+- `x`, `x_text`: numpy array of input features (# of samples x # of features)
 - `y`: label vector consisting of integers (len (y) = # of samples; please use integers 0, 1, 2, ..., K-1 when K-class classification)
 
 ### Parameters
@@ -33,7 +33,7 @@ smlr.predict(X_test)
 - `intercept_`: array, shape = [n_classes]
     - Intercept (a.k.a. bias) added to the decision function.
 
-For demonstration, try `demoSMLR_20140714.py` or `demoSMLR_20140714.ipnb`.
+For demonstration, try `demoSMLR_20140714.py`.
 
 ## References
 
