@@ -30,9 +30,9 @@ $ python setup.py install
 ``` python
 import smlr
 
-smlr = smlr.SMLR(n_iter=100)
-smlr.fit(x, y)
-smlr.predict(x_test)
+model = smlr.SMLR(n_iter=100)
+model.fit(x, y)
+model.predict(x_test)
 ```
 
 - `x`, `x_text`: numpy array of input features (# of samples x # of features)
