@@ -8,7 +8,6 @@ This regularization process estimates the importance of each voxel (feature) and
 
 Original SLR toolbox for Matlab is available at <http://www.cns.atr.jp/%7Eoyamashi/SLR_WEB.html>.
 
-
 ## Installation
 
 ### 1. Install required packages
@@ -19,7 +18,7 @@ Original SLR toolbox for Matlab is available at <http://www.cns.atr.jp/%7Eoyamas
 
 To run the sample script (`demoSMLR_20140714.py`), matplotlib is also required.
 
-### 2. Run `setup.py install`
+### 2. Run the setup script
 
 ```shell
 $ python setup.py install
