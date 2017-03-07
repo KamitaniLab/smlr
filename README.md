@@ -1,6 +1,6 @@
 # SMLR: Sparse Multinominal Logistic Regression
 
-Sparse Multinomial Logistic Regression (SMLR) classifier, writen by Kei Majima at Kyoto Univ.
+Sparse Multinomial Logistic Regression (SMLR) classifier, developed by Kei Majima at Kyoto Univ.
 The API of this function is compatible with the logistic regression in scikit-learn.
 
 Sparse regularization by automatic relevance determination (ARD) prior was introduced to the linear multinomial logistic regression algorithm (Yamashita et al., 2008).
