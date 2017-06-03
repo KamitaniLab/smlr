@@ -4,8 +4,8 @@ SMLR (sparse multinomial logistic regression)
 
 
 import numpy
-import SMLRupdate
 from sklearn.base import BaseEstimator, ClassifierMixin
+from smlr import SMLRupdate
 class SMLR(BaseEstimator, ClassifierMixin):
     """Sparce Multinomial Logistic Regression (SMLR) classifier.
 	The API of this function is compatible with the logistic regression in scikit-learn.
@@ -37,11 +37,11 @@ class SMLR(BaseEstimator, ClassifierMixin):
 
 
     def __init__(self, n_iter=1000,verbose=1):
-	self.n_iter=n_iter
-	self.verbose = verbose
-	#self.densify
+        self.n_iter=n_iter
+        self.verbose = verbose
+        #self.densify
 
-        print "SMLR (sparse multinomial logistic regression)"
+        print("SMLR (sparse multinomial logistic regression)")
     
     def fit(self,feature,label):
         """fit(self, feature, label) method of SMLR instance
@@ -123,7 +123,7 @@ class SMLR(BaseEstimator, ClassifierMixin):
             if self.verbose:
                 if (iteration+1)%numpy.round(self.n_iter*0.2) ==0 or iteration == 0:
                     num_effectiveWeights=numpy.sum(isEffective)
-                    print "# of iterations: %d ,  # of effective dimensions: %d" %(iteration+1, len(effectiveFeature))
+                    print("# of iterations: %d ,  # of effective dimensions: %d" %(iteration+1, len(effectiveFeature)))
     
         temporal_theta=numpy.zeros((D,C))
         temporal_theta[effectiveFeature,:]=theta
@@ -236,8 +236,8 @@ class SMLR(BaseEstimator, ClassifierMixin):
             model, where classes are ordered as they are in ``self.classes_``.
         """
 
-	p = self.predict_proba(feature)
-	return numpy.log(p)
+        p = self.predict_proba(feature)
+        return numpy.log(p)
 
 
 

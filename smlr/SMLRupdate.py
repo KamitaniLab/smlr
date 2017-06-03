@@ -6,7 +6,7 @@
 import numpy
 import scipy
 import scipy.optimize
-import SMLRsubfunc
+from smlr import SMLRsubfunc
 def thetaStep(theta,alpha,Y,X,isEffective):
     
     #chack # of dimensions, # of samples, and # of classes
@@ -26,7 +26,7 @@ def thetaStep(theta,alpha,Y,X,isEffective):
     #Declaration of subfunction. this function transform concatenated effective weight paramters into the original shape
     def thetaConcatenated2thetaOriginalShape(theta_concatenated):
         if len(theta_concatenated)!=len(FeatureNum_effectiveWeight):
-            print "the size of theta_concatenated is wrong"
+            print("the size of theta_concatenated is wrong")
             import sys
             sys.exit()
         

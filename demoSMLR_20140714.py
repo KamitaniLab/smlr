@@ -58,13 +58,13 @@ pylab.ylim(-3, 3)
 matplotlib.pyplot.show()
 
 # SMLR & SVM training
-print "SMLR learning"
+print("SMLR learning")
 smlr.fit(feature4training, label4training)
-print "SVM learning"
+print("SVM learning")
 svm.fit(feature4training, label4training)
 
-print "The SLMR weights obtained"
-print numpy.transpose(smlr.coef_)
+print("The SLMR weights obtained")
+print(numpy.transpose(smlr.coef_))
 
 # Linear boundary in the feature space
 for n in range(len(label4training)):
@@ -102,5 +102,5 @@ for n in range(len(label4test)):
 
 smlr_accuracy = numpy.double(num_correct) / len(label4test) * 100
 
-print "SVM accuracy: %s" % (svm_accuracy)
-print "SMLR accuracy: %s" % (smlr_accuracy)
+print("SVM accuracy: %s" % (svm_accuracy))
+print("SMLR accuracy: %s" % (smlr_accuracy))
