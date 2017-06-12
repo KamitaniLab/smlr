@@ -24,8 +24,8 @@ class SMLR(BaseEstimator, ClassifierMixin):
             Intercept (a.k.a. bias) added to the decision function.
 
     References:
-        Sparse estimation automatically selects voxels relevant for the decoding of
-        fMRI activity patterns.
+        Sparse estimation automatically selects voxels relevant for the 
+        decoding of fMRI activity patterns.
         Yamashita O, Sato MA, Yoshioka T, Tong F, Kamitani Y.
         Neuroimage. 2008.
         doi: 10.1016/j.neuroimage.2008.05.050.    
@@ -47,8 +47,8 @@ class SMLR(BaseEstimator, ClassifierMixin):
 
         Parameters:
             feature: array-like, shape = [n_samples, n_features]
-                    Training vector, where n_samples in the number of samples and
-                    n_features is the number of features.
+                    Training vector, where n_samples in the number of samples 
+                    and n_features is the number of features.
             label: array-like, shape = [n_samples]
                     Target vector for "feature"
 
@@ -92,8 +92,12 @@ class SMLR(BaseEstimator, ClassifierMixin):
         for iteration in range(self.n_iter):
 
             # theta-step
+            import time
+            start = time.time()
             newThetaParam = SMLRupdate.thetaStep(
                 theta, alpha, label_1ofK, feature, isEffective)
+            end = time.time()
+            print(end - start)
             theta = newThetaParam['mu']  # the posterior mean of theta
 
             # alpha-step
@@ -102,12 +106,10 @@ class SMLR(BaseEstimator, ClassifierMixin):
 
             # pruning of irrelevant dimensions (that have large alpha values)
             isEffective = numpy.ones(theta.shape)
-            isEffective[alpha > 10**3] = 0
-            theta[alpha > 10**3] = 0
+            isEffective[alpha > 1e+3] = 0
+            theta[alpha > 1e+3] = 0
 
-            dim_excluded = (numpy.all(isEffective == 0, axis=1))
-            dim_excluded = [d for d in range(len(dim_excluded))
-                            if dim_excluded[d]]
+            dim_excluded = numpy.where(numpy.all(isEffective == 0, axis=1))
             theta = numpy.delete(theta, dim_excluded, axis=0)
             alpha = numpy.delete(alpha, dim_excluded, axis=0)
             feature = numpy.delete(feature, dim_excluded, axis=1)
