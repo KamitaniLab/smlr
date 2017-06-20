@@ -16,7 +16,7 @@ Original SLR toolbox for Matlab is available at <http://www.cns.atr.jp/%7Eoyamas
 - scipy
 - scikit-learn
 
-To run the sample script (`demoSMLR_20140714.py`), matplotlib is also required.
+To run the sample script (`demoSMLR_20170617.py`), matplotlib is also required.
 
 ### 2. Run the setup script
 
@@ -29,7 +29,7 @@ $ python setup.py install
 ``` python
 import smlr
 
-model = smlr.SMLR(n_iter=100)
+model = smlr.SMLR(max_iter=1000,tol=1e-5,verbose=1)
 model.fit(x, y)
 model.predict(x_test)
 ```
@@ -39,7 +39,8 @@ model.predict(x_test)
 
 ### Parameters
 
-- `n_iter`: The number of iterations in training (default `100`).
+- `max_iter`: The number of iterations in training (default `1000`).
+- `tol`: The tolerance value of stopping criteria (default 1e-5; positive value)
 - `verbose`: If 1, print verbose information (default).
 
 ### Attributes
@@ -49,7 +50,7 @@ model.predict(x_test)
 - `intercept_`: array, shape = [n_classes]
     - Intercept (a.k.a. bias) added to the decision function.
 
-For demonstration, try `demoSMLR_20140714.py`.
+For demonstration, try `demoSMLR_20170617.py`.
 
 ## References
 

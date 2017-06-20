@@ -84,7 +84,7 @@ def thetaStep(theta,alpha,Y,X,isEffective):
     var=numpy.diag(cov)
     var=thetaConcatenated2thetaOriginalShape(var)
     
-    param={'mu' : mu , 'var' : var}
+    param={'mu' : mu , 'var' : var, 'funcValue' : res['fun']}
     return param
 # <codecell>
 

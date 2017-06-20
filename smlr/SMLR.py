@@ -12,9 +12,11 @@ class SMLR(BaseEstimator, ClassifierMixin):
 
     Parameters
     ----------
-    n_iter: The number of iterations in training (default 100). 
-    
-    verbose: If 1, print verbose information (default).
+    max_iter: The maximum number of iterations in training (default 1000; int).
+ 
+    tol: The tolerance value of stopping criteria (default 1e-5; positive value)
+
+    verbose: If 1, print verbose information (default 1; 0 or 1).
 
     Attributes
     ----------
@@ -36,8 +38,9 @@ class SMLR(BaseEstimator, ClassifierMixin):
 
 
 
-    def __init__(self, n_iter=1000,verbose=1):
-	self.n_iter=n_iter
+    def __init__(self, max_iter=1000,tol=1e-5,verbose=1):
+	self.max_iter=max_iter
+	self.tol=tol
 	self.verbose = verbose
 	#self.densify
 
@@ -95,14 +98,21 @@ class SMLR(BaseEstimator, ClassifierMixin):
         alpha=numpy.ones((D,C))
         isEffective=numpy.ones((D,C))
         effectiveFeature=range(D)
+        num_effectiveWeights=numpy.sum(isEffective)
         
         #Variational baysian method (see Yamashita et al., 2008)
-        for iteration in range(self.n_iter):
+        for iteration in range(self.max_iter):
             
             #theta-step
             newThetaParam=SMLRupdate.thetaStep(theta,alpha,label_1ofK,feature,isEffective)
             theta=newThetaParam['mu']#the posterior mean of theta
-            
+            if iteration == 0:
+                funcValue_pre=newThetaParam['funcValue']
+                funcValue=newThetaParam['funcValue']
+            else:
+                funcValue_pre=funcValue
+                funcValue=newThetaParam['funcValue']
+			
             #alpha-step
             alpha=SMLRupdate.alphaStep(alpha,newThetaParam['mu'],newThetaParam['var'],isEffective)
             
@@ -121,10 +131,17 @@ class SMLR(BaseEstimator, ClassifierMixin):
             
             #show progress
             if self.verbose:
-                if (iteration+1)%numpy.round(self.n_iter*0.2) ==0 or iteration == 0:
+                #if (iteration+1)%numpy.round(self.max_iter*0.2) ==0 or iteration == 0:
+                #    num_effectiveWeights=numpy.sum(isEffective)
+                #    print "# of iterations: %d ,  # of effective dimensions: %d" %(iteration+1, len(effectiveFeature))
+                if not num_effectiveWeights ==  numpy.sum(isEffective):
                     num_effectiveWeights=numpy.sum(isEffective)
                     print "# of iterations: %d ,  # of effective dimensions: %d" %(iteration+1, len(effectiveFeature))
-    
+                    print "# of iterations: %d ,  FuncValue: %f" %(iteration+1, newThetaParam['funcValue'])
+                    #print " "
+            if iteration > 1 and abs(funcValue - funcValue_pre) < self.tol:
+			break
+		
         temporal_theta=numpy.zeros((D,C))
         temporal_theta[effectiveFeature,:]=theta
         theta=temporal_theta
