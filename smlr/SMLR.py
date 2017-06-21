@@ -181,7 +181,7 @@ class SMLR(BaseEstimator, ClassifierMixin):
             p[n,:]=numpy.exp(numpy.dot(feature[n,:],w))
             p[n,:]=p[n,:]/sum(p[n,:])
             predicted_label.append(self.classes_[numpy.argmax(p[n,:])])
-        return predicted_label
+        return numpy.array(predicted_label)
 
 #    def decision_function(self, feature):
 #        N=feature.shape[0]
