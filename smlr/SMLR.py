@@ -148,7 +148,7 @@ class SMLR(BaseEstimator, ClassifierMixin):
                     
         self.coef_=numpy.transpose(theta[:-1,:])
         self.intercept_=theta[-1,:]
-        return theta
+        return self
 
     def predict(self,feature):
         """predict(self, feature) method of SMLR instance
