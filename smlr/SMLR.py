@@ -90,6 +90,7 @@ class SMLR(BaseEstimator, ClassifierMixin):
         alpha = numpy.ones((D, C))
         isEffective = numpy.ones((D, C))
         effectiveFeature = range(D)
+        num_effectiveWeights = numpy.sum(isEffective)
 
         # Variational baysian method (see Yamashita et al., 2008)
         for iteration in range(self.max_iter):
@@ -98,6 +99,12 @@ class SMLR(BaseEstimator, ClassifierMixin):
             newThetaParam = SMLRupdate.thetaStep(
                 theta, alpha, label_1ofK, feature, isEffective)
             theta = newThetaParam['mu']  # the posterior mean of theta
+            if iteration == 0:
+                funcValue_pre = newThetaParam['funcValue']
+                funcValue = newThetaParam['funcValue']
+            else:
+                funcValue_pre = funcValue
+                funcValue = newThetaParam['funcValue']
 
             # alpha-step
             alpha = SMLRupdate.alphaStep(
@@ -123,13 +130,13 @@ class SMLR(BaseEstimator, ClassifierMixin):
                 #    print "# of iterations: %d ,  # of effective dimensions: %d" %(iteration+1, len(effectiveFeature))
                 if not num_effectiveWeights == numpy.sum(isEffective):
                     num_effectiveWeights = numpy.sum(isEffective)
-                    print("# of iterations: %d ,  # of effective dimensions: %d")
-                        % (iteration + 1, len(effectiveFeature))
-                    print("# of iterations: %d ,  FuncValue: %f")
-                        % (iteration + 1, newThetaParam['funcValue'])
+                    print("# of iterations: %d ,  # of effective dimensions: %d"
+                        % (iteration + 1, len(effectiveFeature)))
+                    print("# of iterations: %d ,  FuncValue: %f"
+                        % (iteration + 1, newThetaParam['funcValue']))
                     #print " "
             if iteration > 1 and abs(funcValue - funcValue_pre) < self.tol:
-			break
+                break
 
         temporal_theta = numpy.zeros((D, C))
         temporal_theta[effectiveFeature, :] = theta
