@@ -14,6 +14,8 @@ class SMLR(BaseEstimator, ClassifierMixin):
     scikit-learn.
 
     Parameters:
+        max_iter: The maximum number of iterations in training
+            (default 1000; int).
         n_iter: The number of iterations in training (default 100). 
         verbose: If 1, print verbose information (default).
 
@@ -32,10 +34,11 @@ class SMLR(BaseEstimator, ClassifierMixin):
 
     """
 
-    def __init__(self, n_iter=1000, verbose=1):
-        self.n_iter = n_iter
+    def __init__(self, max_iter=1000, tol=1e-5, verbose=1):
+        self.max_iter = max_iter
+        self.tol = tol
         self.verbose = verbose
-        # self.densify
+        #self.densify
 
         print("SMLR (sparse multinomial logistic regression)")
 
@@ -89,15 +92,11 @@ class SMLR(BaseEstimator, ClassifierMixin):
         effectiveFeature = range(D)
 
         # Variational baysian method (see Yamashita et al., 2008)
-        for iteration in range(self.n_iter):
+        for iteration in range(self.max_iter):
 
             # theta-step
-            import time
-            start = time.time()
             newThetaParam = SMLRupdate.thetaStep(
                 theta, alpha, label_1ofK, feature, isEffective)
-            end = time.time()
-            print(end - start)
             theta = newThetaParam['mu']  # the posterior mean of theta
 
             # alpha-step
@@ -117,12 +116,20 @@ class SMLR(BaseEstimator, ClassifierMixin):
             effectiveFeature = numpy.delete(
                 effectiveFeature, dim_excluded, axis=0)
 
-            # show progress
+            #show progress
             if self.verbose:
-                if (iteration + 1) % numpy.round(self.n_iter * 0.2) == 0 or iteration == 0:
+                #if (iteration+1)%numpy.round(self.max_iter*0.2) ==0 or iteration == 0:
+                #    num_effectiveWeights=numpy.sum(isEffective)
+                #    print "# of iterations: %d ,  # of effective dimensions: %d" %(iteration+1, len(effectiveFeature))
+                if not num_effectiveWeights == numpy.sum(isEffective):
                     num_effectiveWeights = numpy.sum(isEffective)
-                    print("# of iterations: %d, # of effective dimensions: %d"
-                          % (iteration + 1, len(effectiveFeature)))
+                    print("# of iterations: %d ,  # of effective dimensions: %d")
+                        % (iteration + 1, len(effectiveFeature))
+                    print("# of iterations: %d ,  FuncValue: %f")
+                        % (iteration + 1, newThetaParam['funcValue'])
+                    #print " "
+            if iteration > 1 and abs(funcValue - funcValue_pre) < self.tol:
+			break
 
         temporal_theta = numpy.zeros((D, C))
         temporal_theta[effectiveFeature, :] = theta
@@ -130,7 +137,7 @@ class SMLR(BaseEstimator, ClassifierMixin):
 
         self.coef_ = numpy.transpose(theta[:-1, :])
         self.intercept_ = theta[-1, :]
-        return theta
+        return self
 
     def predict(self, feature):
         """predict(self, feature) method of SMLR instance
@@ -164,7 +171,7 @@ class SMLR(BaseEstimator, ClassifierMixin):
             p[n, :] = numpy.exp(numpy.dot(feature[n, :], w))
             p[n, :] = p[n, :] / sum(p[n, :])
             predicted_label.append(self.classes_[numpy.argmax(p[n, :])])
-        return predicted_label
+        return numpy.array(predicted_label)
 
 #    def decision_function(self, feature):
 #        N=feature.shape[0]

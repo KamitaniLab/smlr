@@ -14,7 +14,7 @@ import pylab
 
 ## Prepare classifier objects
 svm = sklearn.svm.LinearSVC()
-smlr = smlr.SMLR()
+smlr = smlr.SMLR(max_iter=1000,tol=1e-5,verbose=1)
 
 ## Sample data generation
 
