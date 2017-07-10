@@ -104,7 +104,13 @@ def thetaStep(theta, alpha, Y, X, isEffective):
 def alphaStep(alpha, theta, var, isEffective):
     # change the type of input values i
 
-    effectiveIndices = numpy.where(isEffective[:, 0] == 1)
-    newAlpha = numpy.ones_like(alpha) * 1e+8
-    newAlpha[effectiveIndices] = (1 - alpha * var) / theta ** 2
+    D = alpha.shape[0]
+    C = alpha.shape[1]
+    newAlpha = alpha
+    for c in range(C):
+        for d in range(D):
+            if isEffective[d, c] == 1:
+                newAlpha[d, c] = (1 - alpha[d,c] * var[d,c]) / (theta[d,c] ** 2)
+            else:
+                newAlpha[d,c] = 1e+8
     return newAlpha
