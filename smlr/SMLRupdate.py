@@ -40,7 +40,7 @@ def thetaStep(theta, alpha, Y, X, isEffective):
                 theta_concatenated[index_effective_weight]
         return theta_original
 
-    # set the cost function that will be minimized in the following 
+    # set the cost function that will be minimized in the following
     # optimization
     def func2minimize(theta_concatenated):
         theta_originalShape = thetaConcatenated2thetaOriginalShape(
@@ -74,7 +74,7 @@ def thetaStep(theta, alpha, Y, X, isEffective):
         HessE_used = numpy.delete(HessE_used, dim_ignored[0], axis=1)
         return -HessE_used
 
-    # set the initial value for optimization. we use the current theta for 
+    # set the initial value for optimization. we use the current theta for
     # this.
     x0 = theta.ravel(order='F')[:, numpy.newaxis]
     dim_ignored = isEffective.ravel(order='F')[:, numpy.newaxis]
@@ -94,7 +94,7 @@ def thetaStep(theta, alpha, Y, X, isEffective):
     var = numpy.diag(cov)
     var = thetaConcatenated2thetaOriginalShape(var)
 
-    param = {'mu': mu, 'var': var, 'funcValue' : res['fun']}
+    param = {'mu': mu, 'var': var, 'funcValue': res['fun']}
     return param
 # <codecell>
 
@@ -110,7 +110,8 @@ def alphaStep(alpha, theta, var, isEffective):
     for c in range(C):
         for d in range(D):
             if isEffective[d, c] == 1:
-                newAlpha[d, c] = (1 - alpha[d,c] * var[d,c]) / (theta[d,c] ** 2)
+                newAlpha[d, c] = ((1 - alpha[d, c] * var[d, c]) /
+                                  (theta[d, c] ** 2))
             else:
-                newAlpha[d,c] = 1e+8
+                newAlpha[d, c] = 1e+8
     return newAlpha

@@ -38,7 +38,7 @@ class SMLR(BaseEstimator, ClassifierMixin):
         self.max_iter = max_iter
         self.tol = tol
         self.verbose = verbose
-        #self.densify
+        # self.densify
 
         print("SMLR (sparse multinomial logistic regression)")
 
@@ -123,18 +123,14 @@ class SMLR(BaseEstimator, ClassifierMixin):
             effectiveFeature = numpy.delete(
                 effectiveFeature, dim_excluded, axis=0)
 
-            #show progress
+            # show progress
             if self.verbose:
-                #if (iteration+1)%numpy.round(self.max_iter*0.2) ==0 or iteration == 0:
-                #    num_effectiveWeights=numpy.sum(isEffective)
-                #    print "# of iterations: %d ,  # of effective dimensions: %d" %(iteration+1, len(effectiveFeature))
                 if not num_effectiveWeights == numpy.sum(isEffective):
                     num_effectiveWeights = numpy.sum(isEffective)
-                    print("# of iterations: %d ,  # of effective dimensions: %d"
-                        % (iteration + 1, len(effectiveFeature)))
-                    print("# of iterations: %d ,  FuncValue: %f"
-                        % (iteration + 1, newThetaParam['funcValue']))
-                    #print " "
+                    print("# of iterations: %d,  # of effective dimensions: %d"
+                          % (iteration + 1, len(effectiveFeature)))
+                    print("# of iterations: %d,  FuncValue: %f"
+                          % (iteration + 1, newThetaParam['funcValue']))
             if iteration > 1 and abs(funcValue - funcValue_pre) < self.tol:
                 break
 
