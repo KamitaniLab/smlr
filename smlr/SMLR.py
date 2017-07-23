@@ -178,23 +178,22 @@ class SMLR(BaseEstimator, ClassifierMixin):
             predicted_label.append(self.classes_[numpy.argmax(p[n, :])])
         return numpy.array(predicted_label)
 
-#    def decision_function(self, feature):
-#        N=feature.shape[0]
-#        D=feature.shape[1]
-#
-#        #add a bias term to feature
-#        feature=numpy.hstack((feature,numpy.ones((N,1))))
-#
-#        #load weights
-#        w=numpy.vstack((numpy.transpose(self.coef_),self.intercept_))
-#        C=w.shape[1]
-#
-#        #predictive probability calculation
-#        decisionValue=numpy.zeros((N,C))
-#        for n in range(N):
-#            decisionValue[n,:]=numpy.dot(feature[n,:],w)
-#
-#	return decisionValue
+    def decision_function(self, feature):
+        N = feature.shape[0]
+        D = feature.shape[1]
+
+        #add a bias term to feature
+        feature = numpy.hstack((feature, numpy.ones((N, 1))))
+
+        #load weights
+        w = numpy.vstack((numpy.transpose(self.coef_), self.intercept_))
+        C = w.shape[1]
+
+        #predictive probability calculation
+        decisionValue = numpy.zeros((N, C))
+        for n in range(N):
+            decisionValue[n, :] = numpy.dot(feature[n, :], w)
+        return decisionValue
 
     def predict_proba(self, feature):
         """Probability estimates.
