@@ -2,6 +2,8 @@
 SMLR (sparse multinomial logistic regression)
 """
 
+from __future__ import print_function
+
 import numpy
 from sklearn.base import BaseEstimator, ClassifierMixin
 from smlr import SMLRupdate

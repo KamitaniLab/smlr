@@ -3,6 +3,7 @@
 demoSMLR_20140714
 '''
 
+from __future__ import print_function
 
 import numpy
 import sklearn.svm
