@@ -159,41 +159,26 @@ class SMLR(BaseEstimator, ClassifierMixin):
             C: array, shape = [n_samples]
                 Predicted class label per sample.
         """
-        N = feature.shape[0]
-        D = feature.shape[1]
 
         # add a bias term to feature
-        feature = numpy.hstack((feature, numpy.ones((N, 1))))
+        feature = numpy.hstack((feature, numpy.ones((feature.shape[0], 1))))
 
         # load weights
         w = numpy.vstack((numpy.transpose(self.coef_), self.intercept_))
-        C = w.shape[1]
 
         # predictive probability calculation
-        p = numpy.zeros((N, C))
-        predicted_label = list([])
-        for n in range(N):
-            p[n, :] = numpy.exp(numpy.dot(feature[n, :], w))
-            p[n, :] = p[n, :] / sum(p[n, :])
-            predicted_label.append(self.classes_[numpy.argmax(p[n, :])])
-        return numpy.array(predicted_label)
+        p = numpy.exp(feature.dot(w))
+        p /= p.sum(axis=1)[:, numpy.newaxis]
+        return self.classes_[numpy.argmax(p, axis=1)]
 
     def decision_function(self, feature):
-        N = feature.shape[0]
-        D = feature.shape[1]
-
         #add a bias term to feature
-        feature = numpy.hstack((feature, numpy.ones((N, 1))))
+        feature = numpy.hstack((feature, numpy.ones((feature.shape[0], 1))))
 
         #load weights
         w = numpy.vstack((numpy.transpose(self.coef_), self.intercept_))
-        C = w.shape[1]
 
-        #predictive probability calculation
-        decisionValue = numpy.zeros((N, C))
-        for n in range(N):
-            decisionValue[n, :] = numpy.dot(feature[n, :], w)
-        return decisionValue
+        return feature.dot(w)
 
     def predict_proba(self, feature):
         """Probability estimates.
@@ -210,22 +195,16 @@ class SMLR(BaseEstimator, ClassifierMixin):
                 in the model, where classes are ordered as they are in 
                 ``self.classes_``.
         """
-        N = feature.shape[0]
-        D = feature.shape[1]
 
         # add a bias term to feature
-        feature = numpy.hstack((feature, numpy.ones((N, 1))))
+        feature = numpy.hstack((feature, numpy.ones((feature.shape[0], 1))))
 
         # load weights
         w = numpy.vstack((numpy.transpose(self.coef_), self.intercept_))
-        C = w.shape[1]
 
         # predictive probability calculation
-        p = numpy.zeros((N, C))
-        predicted_label = numpy.zeros(N)
-        for n in range(N):
-            p[n, :] = numpy.exp(numpy.dot(feature[n, :], w))
-            p[n, :] = p[n, :] / sum(p[n, :])
+        p = numpy.exp(feature.dot(w))
+        p /= p.sum(axis=1)[:, numpy.newaxis]
         return p
 
     def predict_log_proba(self, feature):
