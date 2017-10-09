@@ -5,20 +5,21 @@ SMLR (sparse multinomial logistic regression)
 from __future__ import print_function
 
 import numpy
-from sklearn.base import BaseEstimator, ClassifierMixin
+from sklearn.base import BaseEstimator
+from sklearn.base import ClassifierMixin
 from smlr import SMLRupdate
 
 
 class SMLR(BaseEstimator, ClassifierMixin):
     """Sparce Multinomial Logistic Regression (SMLR) classifier.
 
-    The API of this function is compatible with the logistic regression in 
+    The API of this function is compatible with the logistic regression in
     scikit-learn.
 
     Parameters:
         max_iter: The maximum number of iterations in training
             (default 1000; int).
-        n_iter: The number of iterations in training (default 100). 
+        n_iter: The number of iterations in training (default 100).
         verbose: If 1, print verbose information (default).
 
     Attributes:
@@ -28,11 +29,11 @@ class SMLR(BaseEstimator, ClassifierMixin):
             Intercept (a.k.a. bias) added to the decision function.
 
     References:
-        Sparse estimation automatically selects voxels relevant for the 
+        Sparse estimation automatically selects voxels relevant for the
         decoding of fMRI activity patterns.
         Yamashita O, Sato MA, Yoshioka T, Tong F, Kamitani Y.
         Neuroimage. 2008.
-        doi: 10.1016/j.neuroimage.2008.05.050.    
+        doi: 10.1016/j.neuroimage.2008.05.050.
 
     """
 
@@ -47,12 +48,12 @@ class SMLR(BaseEstimator, ClassifierMixin):
     def fit(self, feature, label):
         """fit(self, feature, label) method of SMLR instance
 
-        Fit the model according to the given training data (in the same way as 
+        Fit the model according to the given training data (in the same way as
         logistic.py in sklearn).
 
         Parameters:
             feature: array-like, shape = [n_samples, n_features]
-                    Training vector, where n_samples in the number of samples 
+                    Training vector, where n_samples in the number of samples
                     and n_features is the number of features.
             label: array-like, shape = [n_samples]
                     Target vector for "feature"
@@ -87,7 +88,8 @@ class SMLR(BaseEstimator, ClassifierMixin):
         feature = numpy.hstack((feature, numpy.ones((N, 1))))
         D = D + 1
 
-        # set initial values of theta (wieghts) and alpha (relavence parameters)
+        # set initial values of theta (wieghts) and
+        # alpha (relavence parameters)
         theta = numpy.zeros((D, C))
         alpha = numpy.ones((D, C))
         isEffective = numpy.ones((D, C))
@@ -147,11 +149,11 @@ class SMLR(BaseEstimator, ClassifierMixin):
     def predict(self, feature):
         """predict(self, feature) method of SMLR instance
 
-        Predict class labels for samples in feature (in the same way as 
+        Predict class labels for samples in feature (in the same way as
         logistic.py in sklearn).
 
         Parameters:
-            feature: {array-like, sparse matrix}, 
+            feature: {array-like, sparse matrix},
                 shape = [n_samples, n_features]
                 Samples.
 
@@ -172,10 +174,10 @@ class SMLR(BaseEstimator, ClassifierMixin):
         return self.classes_[numpy.argmax(p, axis=1)]
 
     def decision_function(self, feature):
-        #add a bias term to feature
+        # add a bias term to feature
         feature = numpy.hstack((feature, numpy.ones((feature.shape[0], 1))))
 
-        #load weights
+        # load weights
         w = numpy.vstack((numpy.transpose(self.coef_), self.intercept_))
 
         return feature.dot(w)
@@ -191,8 +193,8 @@ class SMLR(BaseEstimator, ClassifierMixin):
 
         Returns:
             T: array-like, shape = [n_samples, n_classes]
-                Returns the probability of the sample for each class 
-                in the model, where classes are ordered as they are in 
+                Returns the probability of the sample for each class
+                in the model, where classes are ordered as they are in
                 ``self.classes_``.
         """
 
@@ -218,7 +220,7 @@ class SMLR(BaseEstimator, ClassifierMixin):
 
         Returns:
             T: array-like, shape = [n_samples, n_classes]
-                Returns the log-probability of the sample for each class 
+                Returns the log-probability of the sample for each class
                 in the model, where classes are ordered as they are in
                 ``self.classes_``.
         """

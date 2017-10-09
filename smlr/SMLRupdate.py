@@ -12,7 +12,6 @@ from smlr import SMLRsubfunc
 def thetaStep(theta, alpha, Y, X, isEffective):
 
     # chack # of dimensions, # of samples, and # of classes
-    N = X.shape[0]
     D = X.shape[1]
     C = Y.shape[1]
 

@@ -3,7 +3,6 @@
 
 # <codecell>
 import numpy
-import scipy
 
 
 def funcE(theta, alpha, Y, X):

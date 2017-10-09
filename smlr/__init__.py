@@ -1,1 +1,1 @@
-from smlr.SMLR import SMLR
+from smlr.SMLR import SMLR  # NOQA
