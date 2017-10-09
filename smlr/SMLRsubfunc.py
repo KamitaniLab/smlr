@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # <nbformat>3.0</nbformat>
 
-# <codecell>
 import numpy
 
 
@@ -18,8 +17,6 @@ def funcE(theta, alpha, Y, X):
     E = numpy.sum(fone) - (0.5) * numpy.sum(theta.ravel(order='F') *
                                             alpha.ravel(order='F') ** 2)
     return E
-
-# <codecell>
 
 
 def gradE(theta, alpha, Y, X):
@@ -45,8 +42,6 @@ def gradE(theta, alpha, Y, X):
         dE[c * D:((c + 1) * D), 0] = numpy.squeeze(temporal_dE)
 
     return numpy.squeeze(dE)
-
-# <codecell>
 
 
 def HessE(theta, alpha, Y, X):

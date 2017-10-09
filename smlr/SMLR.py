@@ -86,7 +86,7 @@ class SMLR(BaseEstimator, ClassifierMixin):
 
         # add a bias term to feature
         feature = numpy.hstack((feature, numpy.ones((N, 1))))
-        D = D + 1
+        D += 1
 
         # set initial values of theta (wieghts) and
         # alpha (relavence parameters)
@@ -171,7 +171,8 @@ class SMLR(BaseEstimator, ClassifierMixin):
         # predictive probability calculation
         p = numpy.exp(feature.dot(w))
         p /= p.sum(axis=1)[:, numpy.newaxis]
-        return self.classes_[numpy.argmax(p, axis=1)]
+        predicted_label = self.classes_[numpy.argmax(p, axis=1)]
+        return numpy.array(predicted_label)
 
     def decision_function(self, feature):
         # add a bias term to feature

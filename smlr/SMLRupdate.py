@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 # <nbformat>3.0</nbformat>
 
-# <codecell>
-
 import numpy
 import scipy
 import scipy.optimize
@@ -10,8 +8,8 @@ from smlr import SMLRsubfunc
 
 
 def thetaStep(theta, alpha, Y, X, isEffective):
-
     # chack # of dimensions, # of samples, and # of classes
+
     D = X.shape[1]
     C = Y.shape[1]
 
@@ -58,8 +56,8 @@ def thetaStep(theta, alpha, Y, X, isEffective):
         dim_ignored = numpy.nonzero(1 - dim_ignored)
         gradE_used = numpy.delete(gradE_originalShape, dim_ignored[0])
         return -gradE_used
-    # set the Hessian for Newton-CG based optimization
 
+    # set the Hessian for Newton-CG based optimization
     def Hess2minimize(theta_concatenated):
         theta_originalShape = thetaConcatenated2thetaOriginalShape(
             theta_concatenated)
@@ -95,22 +93,15 @@ def thetaStep(theta, alpha, Y, X, isEffective):
 
     param = {'mu': mu, 'var': var, 'funcValue': res['fun']}
     return param
-# <codecell>
 
-
-# <codecell>
 
 def alphaStep(alpha, theta, var, isEffective):
-    # change the type of input values i
-
     D = alpha.shape[0]
     C = alpha.shape[1]
-    newAlpha = alpha
     for c in range(C):
         for d in range(D):
             if isEffective[d, c] == 1:
-                newAlpha[d, c] = ((1 - alpha[d, c] * var[d, c]) /
-                                  (theta[d, c] ** 2))
+                alpha[d, c] = (1 - alpha[d, c] * var[d, c]) / theta[d, c] ** 2
             else:
-                newAlpha[d, c] = 1e+8
-    return newAlpha
+                alpha[d, c] = 1e+8
+    return alpha
