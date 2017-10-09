@@ -29,7 +29,7 @@ $ python setup.py install
 ``` python
 import smlr
 
-model = smlr.SMLR(max_iter=1000,tol=1e-5,verbose=1)
+model = smlr.SMLR(max_iter=1000, tol=1e-5, verbose=1)
 model.fit(x, y)
 model.predict(x_test)
 ```
