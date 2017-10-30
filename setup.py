@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='smlr',
-      version='1.0',
+      version='1.1',
       description='Python package for Sparse Multinomial Logistic Regression',
       author='Kei Majima',
       author_email='kamitanilab.contact@gmail.com',
