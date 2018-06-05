@@ -4,7 +4,7 @@
 import numpy
 import scipy
 import scipy.optimize
-from smlr import SMLRsubfunc
+from . import smlrsubfunc
 
 
 def thetaStep(theta, alpha, Y, X, isEffective):
@@ -42,13 +42,13 @@ def thetaStep(theta, alpha, Y, X, isEffective):
     def func2minimize(theta_concatenated):
         theta_originalShape = thetaConcatenated2thetaOriginalShape(
             theta_concatenated)
-        return -SMLRsubfunc.funcE(theta_originalShape, alpha, Y, X)
+        return -smlrsubfunc.funcE(theta_originalShape, alpha, Y, X)
 
     # set the gradient for Newton-CG based optimization
     def grad2minimize(theta_concatenated):
         theta_originalShape = thetaConcatenated2thetaOriginalShape(
             theta_concatenated)
-        gradE_originalShape = SMLRsubfunc.gradE(
+        gradE_originalShape = smlrsubfunc.gradE(
             theta_originalShape, alpha, Y, X)
 
         # ignore the dimensions that have large alphas
@@ -61,7 +61,7 @@ def thetaStep(theta, alpha, Y, X, isEffective):
     def Hess2minimize(theta_concatenated):
         theta_originalShape = thetaConcatenated2thetaOriginalShape(
             theta_concatenated)
-        HessE_originalShape = SMLRsubfunc.HessE(
+        HessE_originalShape = smlrsubfunc.HessE(
             theta_originalShape, alpha, Y, X)
 
         # ignore the dimensions that have large alphas

@@ -7,7 +7,8 @@ from __future__ import print_function
 import numpy
 from sklearn.base import BaseEstimator
 from sklearn.base import ClassifierMixin
-from smlr import SMLRupdate
+
+from . import smlrupdate
 
 
 class SMLR(BaseEstimator, ClassifierMixin):
@@ -100,7 +101,7 @@ class SMLR(BaseEstimator, ClassifierMixin):
         for iteration in range(self.max_iter):
 
             # theta-step
-            newThetaParam = SMLRupdate.thetaStep(
+            newThetaParam = smlrupdate.thetaStep(
                 theta, alpha, label_1ofK, feature, isEffective)
             theta = newThetaParam['mu']  # the posterior mean of theta
             if iteration == 0:
@@ -111,7 +112,7 @@ class SMLR(BaseEstimator, ClassifierMixin):
                 funcValue = newThetaParam['funcValue']
 
             # alpha-step
-            alpha = SMLRupdate.alphaStep(
+            alpha = smlrupdate.alphaStep(
                 alpha, newThetaParam['mu'], newThetaParam['var'], isEffective)
 
             # pruning of irrelevant dimensions (that have large alpha values)
