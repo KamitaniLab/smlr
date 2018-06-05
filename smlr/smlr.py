@@ -5,10 +5,10 @@ SMLR (sparse multinomial logistic regression)
 from __future__ import print_function
 
 import numpy
+import scipy
+import scipy.optimize
 from sklearn.base import BaseEstimator
 from sklearn.base import ClassifierMixin
-
-from . import smlrupdate
 
 
 class SMLR(BaseEstimator, ClassifierMixin):
@@ -101,7 +101,7 @@ class SMLR(BaseEstimator, ClassifierMixin):
         for iteration in range(self.max_iter):
 
             # theta-step
-            newThetaParam = smlrupdate.thetaStep(
+            newThetaParam = self.__thetaStep(
                 theta, alpha, label_1ofK, feature, isEffective)
             theta = newThetaParam['mu']  # the posterior mean of theta
             if iteration == 0:
@@ -112,7 +112,7 @@ class SMLR(BaseEstimator, ClassifierMixin):
                 funcValue = newThetaParam['funcValue']
 
             # alpha-step
-            alpha = smlrupdate.alphaStep(
+            alpha = self.__alphaStep(
                 alpha, newThetaParam['mu'], newThetaParam['var'], isEffective)
 
             # pruning of irrelevant dimensions (that have large alpha values)
@@ -228,3 +228,167 @@ class SMLR(BaseEstimator, ClassifierMixin):
         """
         p = self.predict_proba(feature)
         return numpy.log(p)
+
+    def __thetaStep(self, theta, alpha, Y, X, isEffective):
+        # chack # of dimensions, # of samples, and # of classes
+
+        D = X.shape[1]
+        C = Y.shape[1]
+
+        # Take indices for effective features (if alpha > 10^3, that dimension is
+        # ignored in the following optimization steps)
+        FeatureNum_effectiveWeight = []
+        ClassNum_effectiveWeight = []
+        for c in range(C):
+            for d in range(D):
+                if isEffective[d, c] == 1:
+                    FeatureNum_effectiveWeight.append(d)
+                    ClassNum_effectiveWeight.append(c)
+
+        # Declaration of subfunction. this function transform concatenated
+        # effective weight paramters into the original shape
+        def thetaConcatenated2thetaOriginalShape(theta_concatenated):
+            if len(theta_concatenated) != len(FeatureNum_effectiveWeight):
+                raise ValueError("The size of theta_concatenated is wrong")
+
+            theta_original = numpy.zeros((D, C))
+            for index_effective_weight in range(len(FeatureNum_effectiveWeight)):
+                theta_original[
+                    FeatureNum_effectiveWeight[index_effective_weight],
+                    ClassNum_effectiveWeight[index_effective_weight]] =\
+                    theta_concatenated[index_effective_weight]
+            return theta_original
+
+        # set the cost function that will be minimized in the following
+        # optimization
+        def func2minimize(theta_concatenated):
+            theta_originalShape = thetaConcatenated2thetaOriginalShape(
+                theta_concatenated)
+            return -self.__funcE(theta_originalShape, alpha, Y, X)
+
+        # set the gradient for Newton-CG based optimization
+        def grad2minimize(theta_concatenated):
+            theta_originalShape = thetaConcatenated2thetaOriginalShape(
+                theta_concatenated)
+            gradE_originalShape = self.__gradE(
+                theta_originalShape, alpha, Y, X)
+
+            # ignore the dimensions that have large alphas
+            dim_ignored = isEffective.ravel(order='F')[:, numpy.newaxis]
+            dim_ignored = numpy.nonzero(1 - dim_ignored)
+            gradE_used = numpy.delete(gradE_originalShape, dim_ignored[0])
+            return -gradE_used
+
+        # set the Hessian for Newton-CG based optimization
+        def Hess2minimize(theta_concatenated):
+            theta_originalShape = thetaConcatenated2thetaOriginalShape(
+                theta_concatenated)
+            HessE_originalShape = self.__HessE(
+                theta_originalShape, alpha, Y, X)
+
+            # ignore the dimensions that have large alphas
+            dim_ignored = isEffective.ravel(order='F')[:, numpy.newaxis]
+            dim_ignored = numpy.nonzero(1 - dim_ignored)
+            HessE_used = numpy.delete(HessE_originalShape, dim_ignored[0], axis=0)
+            HessE_used = numpy.delete(HessE_used, dim_ignored[0], axis=1)
+            return -HessE_used
+
+        # set the initial value for optimization. we use the current theta for
+        # this.
+        x0 = theta.ravel(order='F')[:, numpy.newaxis]
+        dim_ignored = isEffective.ravel(order='F')[:, numpy.newaxis]
+        dim_ignored = numpy.nonzero(1 - dim_ignored)
+        x0 = numpy.delete(x0, dim_ignored[0])
+
+        # Optimization of theta (weight paramter) with scipy.optimize.minimize
+        res = scipy.optimize.minimize(
+            func2minimize, x0, method='Newton-CG',
+            jac=grad2minimize, hess=Hess2minimize, tol=1e-3)
+        mu = thetaConcatenated2thetaOriginalShape(res['x'])
+
+        # The covariance matrix of the posterior distribution
+        cov = numpy.linalg.inv(Hess2minimize(res['x']))
+
+        # The diagonal elements of the above covariance matrix
+        var = numpy.diag(cov)
+        var = thetaConcatenated2thetaOriginalShape(var)
+
+        param = {'mu': mu, 'var': var, 'funcValue': res['fun']}
+        return param
+
+    def __alphaStep(self, alpha, theta, var, isEffective):
+        D = alpha.shape[0]
+        C = alpha.shape[1]
+        for c in range(C):
+            for d in range(D):
+                if isEffective[d, c] == 1:
+                    alpha[d, c] = (1 - alpha[d, c] * var[d, c]) / theta[d, c] ** 2
+                else:
+                    alpha[d, c] = 1e+8
+        return alpha
+
+    def __funcE(self, theta, alpha, Y, X):
+        # theta: weights for classification, dimensions by # of classes
+        # alpha: relavance parameters in ARD, dimensions by # of classes
+        # Y: label matrix, 1-of-K representation, # of samples by # of classes
+        # X: feature matrix, # of samples by # of dimensions
+        # output: log likelihood function of theta (averaged over alpha)
+
+        linearSum = X.dot(theta)
+        fone = numpy.sum(Y * linearSum, axis=1) - \
+            numpy.log(numpy.sum(numpy.exp(linearSum), axis=1))
+        E = numpy.sum(fone) - (0.5) * numpy.sum(theta.ravel(order='F') *
+                                                alpha.ravel(order='F') ** 2)
+        return E
+
+    def __gradE(self, theta, alpha, Y, X):
+        # theta: weights for classification, dimensions by # of classes
+        # alpha: relavance parameters in ARD, dimensions by # of classes
+        # Y: label matrix, 1-of-K representation, # of samples by # of classes
+        # X: feature matrix, # of samples by # of dimensions
+        # output: The gragient of funcE. This is used for Q-step optimization.
+
+        D = X.shape[1]
+        C = Y.shape[1]
+
+        dE = numpy.zeros((theta.shape[0] * theta.shape[1], 1))
+        linearSumExponential = numpy.exp(X.dot(theta))
+        p = linearSumExponential / numpy.sum(
+            linearSumExponential, axis=1)[:, numpy.newaxis]
+
+        for c in range(C):
+            temporal_dE = numpy.sum(
+                (Y[:, c] - p[:, c]) * X.T, axis=1)[:, numpy.newaxis]
+            A = numpy.diag(alpha[:, c])
+            temporal_dE -= numpy.transpose([numpy.dot(A, theta[:, c])])
+            dE[c * D:((c + 1) * D), 0] = numpy.squeeze(temporal_dE)
+
+        return numpy.squeeze(dE)
+
+    def __HessE(self, theta, alpha, Y, X):
+        # theta: weights for classification, dimensions by # of classes
+        # alpha: relavance parameters in ARD, dimensions by # of classes
+        # Y: label matrix, 1-of-K representation, # of samples by # of classes
+        # X: feature matrix, # of samples by # of dimensions
+        # output: The Hessian of funcE. This is used for Q-step optimization.
+
+        N = X.shape[0]
+        D = X.shape[1]
+        C = Y.shape[1]
+
+        linearSumExponential = numpy.exp(X.dot(theta))
+        p = linearSumExponential / numpy.sum(
+            linearSumExponential, axis=1)[:, numpy.newaxis]
+        H = numpy.zeros((C * D, C * D))
+
+        for n in range(N):
+            M1 = numpy.diag(p[n, :])
+            M2 = numpy.dot(numpy.transpose([p[n, :]]), [p[n, :]])
+            M3 = numpy.dot(numpy.transpose([X[n, :]]), [X[n, :]])
+            H = H - numpy.kron(M1 - M2, M3)
+        H = H - numpy.diag(alpha.ravel(order='F'))
+        # Derivation came from Yamashita et al., Nuroimage,2008., but
+        # exactly speaking, the last term is modified.
+        # The above is consistent with SLR toolbox (MATLAB-based implementation by
+        # Yamashita-san) rather than the paper.
+        return H
