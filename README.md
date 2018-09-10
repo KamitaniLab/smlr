@@ -1,7 +1,6 @@
 # SMLR: Sparse Multinominal Logistic Regression
 
 Sparse Multinomial Logistic Regression (SMLR) classifier, developed by Kei Majima at Kyoto Univ.
-The API of this function is compatible with the logistic regression in scikit-learn.
 
 Sparse regularization by automatic relevance determination (ARD) prior was introduced to the linear multinomial logistic regression algorithm (Yamashita et al., 2008).
 This regularization process estimates the importance of each voxel (feature) and prunes away voxels that are not useful for prediction.
@@ -10,18 +9,10 @@ Original SLR toolbox for Matlab is available at <http://www.cns.atr.jp/%7Eoyamas
 
 ## Installation
 
-### 1. Install required packages
-
-- numpy
-- scipy
-- scikit-learn
-
-To run the sample script (`demoSMLR_20170617.py`), matplotlib is also required.
-
-### 2. Run the setup script
+Run the following command:
 
 ```shell
-$ python setup.py install
+$ pip install git+https://github.com/KamitaniLab/smlr.git
 ```
 
 ## Usage
@@ -34,8 +25,10 @@ model.fit(x, y)
 model.predict(x_test)
 ```
 
-- `x`, `x_text`: numpy array of input features (# of samples x # of features)
-- `y`: label vector consisting of integers (len (y) = # of samples; please use integers 0, 1, 2, ..., K-1 when K-class classification)
+- `x`, `x_test`: numpy array of input features (# of samples x # of features)
+- `y`: label vector consisting of integers (len(y) = # of samples; please use integers 0, 1, 2, ..., K-1 when K-class classification)
+
+The API of this function is compatible with the logistic regression in scikit-learn.
 
 ### Parameters
 
